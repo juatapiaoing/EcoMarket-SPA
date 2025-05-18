@@ -13,7 +13,7 @@ public class UserRepository {
 
     public UserRepository() {
         users = new ArrayList<>();
-        users.add(new UserResponse(1
+        users.add(new UserResponse("12345678-9"
                 ,"Juan Carlos"
                 ,"Tapia"
                 ,"jua.tapiao@duocuc.cl"
@@ -23,4 +23,46 @@ public class UserRepository {
     public List<UserResponse> getAllUsers() {
         return users;
     }
-}
+    //---------------------------------------------------------------------------------------------------
+
+    public UserResponse getUser(int userId) {
+        return users.get(userId);
+    }
+    //---------------------------------------------------------------------------------------------------
+    //Añadir usuario  @PostMapping("/add")
+    public UserResponse addUser(UserRequest userRequest) {
+        int newId = users.size() + 1;
+        users.add(new UserResponse(userRequest.getRun(),
+                userRequest.getFirstName(),
+                userRequest.getLastName(),
+                userRequest.getEmail(),
+                userRequest.getPhone()));
+
+        return users.get(newId);
+
+    }
+    //---------------------------------------------------------------------------------------------------
+    // Modificar un usuario (@PutMapping("/{elementNumber}")
+    public UserResponse updateUser(int index, UserRequest updatedUser) {
+        if (index >= 0 && index < users.size()) {
+            users.get(index).setRun(updatedUser.getRun());
+            users.get(index).setFirstName(updatedUser.getFirstName());
+            users.get(index).setLastName(updatedUser.getLastName());
+            users.get(index).setEmail(updatedUser.getEmail());
+            users.get(index).setPhone(updatedUser.getPhone());
+            return users.get(index);
+        }
+        return null;
+    }
+
+    //Eliminar un usuario (@DeleteMapping("/{elementNumber}")
+    public UserResponse deleteUser(int userId) {
+        if (userId >= 0 && userId < users.size()) {
+            return users.remove(userId);
+
+        }
+        return null;
+    }
+
+
+}//FIN CODIGO

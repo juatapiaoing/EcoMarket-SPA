@@ -23,37 +23,15 @@ public class InventoryService {
         return inventoryRepository.getInventoryById(id);
     }
 
-    public InventoryRequest addInventory(InventoryRequest inventoryRequest) {
-        List<InventoryResponse> inventoryResponses = inventoryRepository.getInventoryResponses();
-        InventoryResponse newInventory = new InventoryResponse(inventoryRequest.getId(),
-                   inventoryRequest.getName(),
-                   inventoryRequest.getDescription(),
-                   inventoryRequest.getQuantity(),
-                   inventoryRequest.getPrice());
-        inventoryResponses.add(newInventory);
-        return inventoryRequest;
+    public InventoryResponse addInventory(InventoryRequest inventoryRequest) {
+        return  inventoryRepository.addProduct(inventoryRequest);
     }
 
-    public InventoryRequest updateInventory(InventoryRequest inventoryRequest) {
-        List<InventoryResponse> inventoryResponses = inventoryRepository.getInventoryResponses();
-        int id = inventoryRequest.getId();
-        String name = inventoryRequest.getName();
-        String description = inventoryRequest.getDescription();
-        int quantity = inventoryRequest.getQuantity();
-        int price = inventoryRequest.getPrice();
-        InventoryResponse inventoryResponse = inventoryRepository.getInventoryById(id);
-        inventoryResponse.setId(id);
-        inventoryResponse.setName(name);
-        inventoryResponse.setDescription(description);
-        inventoryResponse.setQuantity(quantity);
-        inventoryResponse.setPrice(price);
-        return inventoryRequest;
+    public InventoryResponse updateInventory(int elementNumber, InventoryRequest inventoryRequest) {
+        return  inventoryRepository.updateProduct(elementNumber, inventoryRequest);
     }
 
     public InventoryResponse deleteInventory(int elementNumber) {
-        List<InventoryResponse> inventoryResponses = inventoryRepository.getInventoryResponses();
-        int id = inventoryResponses.get(elementNumber).getId();
-        inventoryResponses.remove(id);
-        return inventoryRepository.getInventoryById(id);
+        return inventoryRepository.deleteProduct(elementNumber);
     }
 }

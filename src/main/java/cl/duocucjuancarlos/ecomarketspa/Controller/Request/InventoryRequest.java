@@ -9,8 +9,10 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+
+//            Aca Recibe información para ingresar productos al inventario (cantidad,Nombre,Descripcion,Precio).
+
 public class InventoryRequest {
-    private int id;
     private String name;
     private String description;
     private int quantity;

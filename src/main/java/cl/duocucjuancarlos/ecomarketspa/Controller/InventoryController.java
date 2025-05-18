@@ -3,7 +3,6 @@ package cl.duocucjuancarlos.ecomarketspa.Controller;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Request.InventoryRequest;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.InventoryResponse;
 import cl.duocucjuancarlos.ecomarketspa.Service.InventoryService;
-import cl.duocucjuancarlos.ecomarketspa.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,11 @@ public class InventoryController {
 
     @GetMapping("/{elementNumber}")
     public ResponseEntity<InventoryResponse> getInventory(@PathVariable int elementNumber) {
-        return ResponseEntity.ok(inventoryService.getInventoryById(elementNumber));
+        InventoryResponse found = inventoryService.getInventoryById(elementNumber);
+        if (found == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(found);
     }
 
     @PostMapping("/add")
@@ -32,12 +35,23 @@ public class InventoryController {
     }
 
     @PutMapping("/{elementNumber}")
-    public InventoryRequest updateInventory(@PathVariable int elementNumber, @RequestBody InventoryRequest inventoryRequest) {
-        return inventoryService.updateInventory(inventoryRequest);
+    public ResponseEntity<InventoryResponse> updateInventory(@PathVariable int elementNumber, @RequestBody InventoryRequest inventoryRequest) {
+        InventoryResponse found = inventoryService.updateInventory(elementNumber, inventoryRequest);
+        if (found == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(found);
     }
+//-----------------------------------------------------------------------------------------------
 
     @DeleteMapping("/{elementNumber}")
-    public InventoryResponse deleteInventory(@PathVariable int elementNumber) {
-        return inventoryService.deleteInventory(elementNumber);
+    public ResponseEntity<InventoryResponse> deleteInventory(@PathVariable int elementNumber) {
+        InventoryResponse found = inventoryService.deleteInventory(elementNumber);
+        if (found == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(found);
     }
-}
+//-----------------------------------------------------------------------------------------------
+
+}//FIN CODIGO
