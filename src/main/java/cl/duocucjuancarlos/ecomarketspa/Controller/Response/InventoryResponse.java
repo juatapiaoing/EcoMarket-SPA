@@ -17,3 +17,4 @@ public class InventoryResponse extends InventoryRequest {
     private int quantity;
     private int price;
 }
+

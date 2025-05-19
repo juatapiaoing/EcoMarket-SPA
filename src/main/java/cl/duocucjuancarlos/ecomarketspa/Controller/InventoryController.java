@@ -8,17 +8,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+            //CONTROLA EL INVENTARIO PUDIENDO :ELIMINAR AÑADIR VER MODIFICAR
 @RestController
 @RequestMapping("/api/Inventory")
-public class InventoryController {
+
+public class InventoryController {//INICIO CODIGO
     @Autowired
     private InventoryService inventoryService;
+//-----------------------------------------------------------------------------------------------
 
     @GetMapping()
     public ResponseEntity<List<InventoryResponse>> getInventory() {
         return ResponseEntity.ok(inventoryService.getInventory());
     }
+//-----------------------------------------------------------------------------------------------
 
     @GetMapping("/{elementNumber}")
     public ResponseEntity<InventoryResponse> getInventory(@PathVariable int elementNumber) {
@@ -28,11 +31,17 @@ public class InventoryController {
         }
         return ResponseEntity.ok(found);
     }
-
+//-----------------------------------------------------------------------------------------------
     @PostMapping("/add")
-     public InventoryRequest addInventory(@RequestBody InventoryRequest inventoryRequest) {
-        return inventoryService.addInventory(inventoryRequest);
+     public ResponseEntity<InventoryRequest> addInventory(@RequestBody InventoryRequest inventoryRequest) {
+        InventoryRequest found = inventoryService.addInventory(inventoryRequest);
+        if (found == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(found);
+
     }
+//-----------------------------------------------------------------------------------------------
 
     @PutMapping("/{elementNumber}")
     public ResponseEntity<InventoryResponse> updateInventory(@PathVariable int elementNumber, @RequestBody InventoryRequest inventoryRequest) {

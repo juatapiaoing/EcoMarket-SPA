@@ -1,15 +1,22 @@
 package cl.duocucjuancarlos.ecomarketspa.Repository;
 
+import cl.duocucjuancarlos.ecomarketspa.Controller.Request.InventoryRequest;
+import cl.duocucjuancarlos.ecomarketspa.Controller.Request.UserRequest;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.UserResponse;
 import cl.duocucjuancarlos.ecomarketspa.Service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class UserRepository {
+public class UserRepository {//INICIO CODIGO
     private List<UserResponse> users;
+    //---------------------------------------------------------------------------------------------------
 
     public UserRepository() {
         users = new ArrayList<>();
@@ -19,7 +26,7 @@ public class UserRepository {
                 ,"jua.tapiao@duocuc.cl"
                 ,"937459464"));
     }
-
+    // Funcion para pedir un usuario (getMapping("/{elementNumber}"))
     public List<UserResponse> getAllUsers() {
         return users;
     }
