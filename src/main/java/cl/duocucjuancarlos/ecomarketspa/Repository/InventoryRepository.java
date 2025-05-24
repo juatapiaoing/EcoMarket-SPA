@@ -18,17 +18,14 @@ public class InventoryRepository {
         inventoryResponses.add(new InventoryResponse(1, "shampoo", "bio", 10, 1000));
     }
 
+    //contiene logica de negocio
     public InventoryResponse updateProduct(int elementNumber, InventoryRequest inventoryRequest) {
-        for (InventoryResponse inventoryResponse : inventoryResponses) {
-            if(inventoryResponse.getId() == elementNumber) {
-                inventoryResponse.setName(inventoryRequest.getName());
-                inventoryResponse.setDescription(inventoryRequest.getDescription());
-                inventoryResponse.setQuantity(inventoryRequest.getQuantity());
-                inventoryResponse.setPrice(inventoryRequest.getPrice());
-                return inventoryResponses.get(inventoryResponses.indexOf(inventoryResponse));
-            }
-        }
-        return null;
+        inventoryResponses.get(elementNumber).setId(elementNumber);
+        inventoryResponses.get(elementNumber).setName(inventoryRequest.getName());
+        inventoryResponses.get(elementNumber).setDescription(inventoryRequest.getDescription());
+        inventoryResponses.get(elementNumber).setPrice(inventoryRequest.getPrice());
+        inventoryResponses.get(elementNumber).setQuantity(inventoryRequest.getQuantity());
+        return inventoryResponses.get(elementNumber);
     }
 
     public List<InventoryResponse> getInventoryResponses() {
@@ -48,13 +45,11 @@ public class InventoryRepository {
         int quantity = inventoryRequest.getQuantity();
         inventoryResponses.add(new InventoryResponse(id, name, description, price, quantity));
 
-        return inventoryResponses.get(id);
+        return inventoryResponses.get(id-1);
     }
 
+    //contiene logica de negocio
     public InventoryResponse deleteProduct(int elementNumber) {
-        if (inventoryResponses.get(elementNumber).getId() == elementNumber + 1) {
-            return inventoryResponses.remove(elementNumber);
-        }
-        return null;
+       return inventoryResponses.remove(elementNumber);
     }
 }

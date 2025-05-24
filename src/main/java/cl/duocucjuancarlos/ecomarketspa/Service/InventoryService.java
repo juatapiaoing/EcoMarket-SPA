@@ -24,14 +24,25 @@ public class InventoryService {
     }
 
     public InventoryResponse addInventory(InventoryRequest inventoryRequest) {
-        return  inventoryRepository.addProduct(inventoryRequest);
+        if (inventoryRequest != null) {
+            return  inventoryRepository.addProduct(inventoryRequest);
+        }
+        return null;
     }
 
     public InventoryResponse updateInventory(int elementNumber, InventoryRequest inventoryRequest) {
-        return  inventoryRepository.updateProduct(elementNumber, inventoryRequest);
+        List<InventoryResponse> inventoryResponses = inventoryRepository.getInventoryResponses();
+        if (elementNumber >= 0 && elementNumber < inventoryResponses.size()) {
+            return  inventoryRepository.updateProduct(elementNumber, inventoryRequest);
+        }
+        return null;
     }
 
     public InventoryResponse deleteInventory(int elementNumber) {
-        return inventoryRepository.deleteProduct(elementNumber);
+        List <InventoryResponse> inventoryResponses = inventoryRepository.getInventoryResponses();
+        if (elementNumber >= 0 && elementNumber > inventoryResponses.size()) {
+            return inventoryRepository.deleteProduct(elementNumber);
+        }
+        return null;
     }
 }

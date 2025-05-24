@@ -14,8 +14,7 @@ import lombok.Setter;
 //                      Aca Recibe los datos necesarios para generar un pedido (order) del cliente.
 
 public class OrderRequest {//inicio codigo
-        private Long userId; // esto es el id del carrito osea a cual usuario corresponde
-        private List<Long> productIds; // esto es el carrito de compras con los id de los procutos que llevara
+        private List<Integer> productId = new ArrayList<>(); // esto es el carrito de compras con los id de los procutos que llevara
 
 }//fin codigo
 

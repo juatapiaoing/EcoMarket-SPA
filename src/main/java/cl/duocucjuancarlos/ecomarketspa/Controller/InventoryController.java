@@ -17,7 +17,7 @@ public class InventoryController {//INICIO CODIGO
     private InventoryService inventoryService;
 //-----------------------------------------------------------------------------------------------
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<InventoryResponse>> getInventory() {
         return ResponseEntity.ok(inventoryService.getInventory());
     }
@@ -35,11 +35,10 @@ public class InventoryController {//INICIO CODIGO
     @PostMapping("/add")
      public ResponseEntity<InventoryRequest> addInventory(@RequestBody InventoryRequest inventoryRequest) {
         InventoryRequest found = inventoryService.addInventory(inventoryRequest);
-        if (found == null) {
-            return ResponseEntity.badRequest().build();
+        if (found != null) {
+            return ResponseEntity.ok(found);
         }
-        return ResponseEntity.ok(found);
-
+        return ResponseEntity.notFound().build();
     }
 //-----------------------------------------------------------------------------------------------
 

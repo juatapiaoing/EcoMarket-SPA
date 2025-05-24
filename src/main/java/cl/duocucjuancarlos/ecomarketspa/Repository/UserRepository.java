@@ -20,7 +20,8 @@ public class UserRepository {//INICIO CODIGO
 
     public UserRepository() {
         users = new ArrayList<>();
-        users.add(new UserResponse("12345678-9"
+        users.add(new UserResponse(0,
+                "12345678-9"
                 ,"Juan Carlos"
                 ,"Tapia"
                 ,"jua.tapiao@duocuc.cl"
@@ -39,7 +40,8 @@ public class UserRepository {//INICIO CODIGO
     //Añadir usuario  @PostMapping("/add")
     public UserResponse addUser(UserRequest userRequest) {
         int newId = users.size() + 1;
-        users.add(new UserResponse(userRequest.getRun(),
+        users.add(new UserResponse(newId,
+                userRequest.getRun(),
                 userRequest.getFirstName(),
                 userRequest.getLastName(),
                 userRequest.getEmail(),
@@ -50,25 +52,19 @@ public class UserRepository {//INICIO CODIGO
     }
     //---------------------------------------------------------------------------------------------------
     // Modificar un usuario (@PutMapping("/{elementNumber}")
+    //contiene logica de negocio
     public UserResponse updateUser(int index, UserRequest updatedUser) {
-        if (index >= 0 && index < users.size()) {
             users.get(index).setRun(updatedUser.getRun());
             users.get(index).setFirstName(updatedUser.getFirstName());
             users.get(index).setLastName(updatedUser.getLastName());
             users.get(index).setEmail(updatedUser.getEmail());
             users.get(index).setPhone(updatedUser.getPhone());
             return users.get(index);
-        }
-        return null;
     }
 
     //Eliminar un usuario (@DeleteMapping("/{elementNumber}")
     public UserResponse deleteUser(int userId) {
-        if (userId >= 0 && userId < users.size()) {
             return users.remove(userId);
-
-        }
-        return null;
     }
 
 
