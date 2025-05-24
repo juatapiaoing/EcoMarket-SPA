@@ -1,10 +1,9 @@
 package cl.duocucjuancarlos.ecomarketspa.Controller;
 
 
-import cl.duocucjuancarlos.ecomarketspa.Controller.Request.InventoryRequest;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Request.InvoiceRequest;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.InvoiceResponse;
-import cl.duocucjuancarlos.ecomarketspa.Service.InvouceService;
+import cl.duocucjuancarlos.ecomarketspa.Service.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +14,7 @@ import java.util.List;
 @RequestMapping("api/v1/invoices")
 public class InvoiceController {
     @Autowired
-    private InvouceService service;
+    private InvoiceService service;
 
     @GetMapping
     public ResponseEntity<List<InvoiceResponse>> getAllInvoices() {

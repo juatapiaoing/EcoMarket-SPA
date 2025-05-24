@@ -19,4 +19,7 @@ public class InvoiceResponse {
     private List<String> products;
     private List<Integer> prices;
     private int total;
+
+    public InvoiceResponse(int id, String run, String name, List<String> products, double total) {
+    }
 }

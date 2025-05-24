@@ -20,6 +20,7 @@ public class InvoiceRepository {
     }
 
 
-
-
+    public void addInvoice(InvoiceResponse invoice) {
+        invoiceResponse.add(invoice);
+    }
 }

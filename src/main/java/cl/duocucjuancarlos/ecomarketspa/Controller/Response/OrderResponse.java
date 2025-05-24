@@ -1,7 +1,6 @@
 package cl.duocucjuancarlos.ecomarketspa.Controller.Response;
 
 
-import cl.duocucjuancarlos.ecomarketspa.Controller.Request.OrderRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

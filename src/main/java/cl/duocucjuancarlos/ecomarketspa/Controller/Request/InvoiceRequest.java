@@ -13,8 +13,4 @@ import java.util.List;
 @NoArgsConstructor
 public class InvoiceRequest {
     private int id;
-    private int run;
-    private String name;
-    private List<String> products;
-    private List<Integer> prices;
 }
