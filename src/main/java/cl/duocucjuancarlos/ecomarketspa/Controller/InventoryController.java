@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
             //CONTROLA EL INVENTARIO PUDIENDO :ELIMINAR AÑADIR VER MODIFICAR
 @RestController
-@RequestMapping("/api/Inventory")
+@RequestMapping("/api/v1/inventory")
 
 public class InventoryController {//INICIO CODIGO
     @Autowired

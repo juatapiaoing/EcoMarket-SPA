@@ -37,17 +37,18 @@ public class UserService {
 
     //falta logica de negocio
     public UserResponse updateUserById(int userId, UserRequest userRequest) {
-        List<UserResponse>  List = userRepository.getAllUsers();
-        if (userId >= 0 && userId < List.size() ) {
+        List<UserResponse>  ListCreate = userRepository.getAllUsers();
+        if (userId >= 0 && userId - 1 < ListCreate.size() ) {
             return userRepository.updateUser(userId, userRequest);
         }
         return null;
     }
 
     public UserResponse deleteUserById(int userId) {
-        if (userRepository.getUser(userId) == null) {
-            return null;
+        List<UserResponse>  ListDelete = userRepository.getAllUsers();
+        if (userId >= 0 && userId - 1 < ListDelete.size() ){
+            return userRepository.deleteUser(userId);
         }
-        return userRepository.deleteUser(userId);
+        return null;
     }
 }

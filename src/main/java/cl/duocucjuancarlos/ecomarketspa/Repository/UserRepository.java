@@ -16,28 +16,24 @@ import java.util.List;
 @Repository
 public class UserRepository {//INICIO CODIGO
     private List<UserResponse> users;
-    //---------------------------------------------------------------------------------------------------
 
     public UserRepository() {
         users = new ArrayList<>();
-        users.add(new UserResponse(0,
+        users.add(new UserResponse(1,
                 "12345678-9"
                 ,"Juan Carlos"
                 ,"Tapia"
                 ,"jua.tapiao@duocuc.cl"
-                ,"937459464"));
+                ,"123456789"));
     }
-    // Funcion para pedir un usuario (getMapping("/{elementNumber}"))
     public List<UserResponse> getAllUsers() {
         return users;
     }
-    //---------------------------------------------------------------------------------------------------
 
     public UserResponse getUser(int userId) {
         return users.get(userId);
     }
-    //---------------------------------------------------------------------------------------------------
-    //Añadir usuario  @PostMapping("/add")
+
     public UserResponse addUser(UserRequest userRequest) {
         int newId = users.size() + 1;
         users.add(new UserResponse(newId,
@@ -47,25 +43,36 @@ public class UserRepository {//INICIO CODIGO
                 userRequest.getEmail(),
                 userRequest.getPhone()));
 
-        return users.get(newId);
+        return users.get(newId - 1);
 
     }
-    //---------------------------------------------------------------------------------------------------
-    // Modificar un usuario (@PutMapping("/{elementNumber}")
-    //contiene logica de negocio
+
     public UserResponse updateUser(int index, UserRequest updatedUser) {
-            users.get(index).setRun(updatedUser.getRun());
-            users.get(index).setFirstName(updatedUser.getFirstName());
-            users.get(index).setLastName(updatedUser.getLastName());
-            users.get(index).setEmail(updatedUser.getEmail());
-            users.get(index).setPhone(updatedUser.getPhone());
-            return users.get(index);
+        UserResponse user = users.get(index - 1);
+
+        if (updatedUser.getRun() != null) {
+            user.setRun(updatedUser.getRun());
+        }
+        if (updatedUser.getFirstName() != null) {
+            user.setFirstName(updatedUser.getFirstName());
+        }
+        if (updatedUser.getLastName() != null) {
+            user.setLastName(updatedUser.getLastName());
+        }
+        if (updatedUser.getEmail() != null) {
+            user.setEmail(updatedUser.getEmail());
+        }
+        if (updatedUser.getPhone() != null) {
+            user.setPhone(updatedUser.getPhone());
+        }
+        return user;
     }
 
-    //Eliminar un usuario (@DeleteMapping("/{elementNumber}")
     public UserResponse deleteUser(int userId) {
-            return users.remove(userId);
+        int idDelete = userId - 1;
+        if (idDelete < 0 || idDelete >= users.size()) {
+            return null;
+        }
+        return users.remove(idDelete);
     }
-
-
-}//FIN CODIGO
+}

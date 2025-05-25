@@ -1,5 +1,4 @@
 package cl.duocucjuancarlos.ecomarketspa.Controller;
-
 import cl.duocucjuancarlos.ecomarketspa.Controller.Request.UserRequest;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.UserResponse;
 import cl.duocucjuancarlos.ecomarketspa.Service.UserService;
@@ -8,9 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
-@RequestMapping("/api/Users")
+@RequestMapping("/api/v1/users")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -22,6 +20,9 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable int userId){
+        if (userService.getUserById(userId) == null){
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController  //esto sirve para hacer funcionar el postman
-@RequestMapping("/api/Orders")// esto es para llamarlo en el postman
+@RequestMapping("/api/v1/orders")// esto es para llamarlo en el postman
 
 public class OrderController {
     //---------------------------------------------------------------------------------------------

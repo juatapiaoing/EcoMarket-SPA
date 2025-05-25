@@ -26,7 +26,7 @@ public class InvoiceController {
 
     @PostMapping("/newInvoice")
     public ResponseEntity<InvoiceResponse> newInvoice(@RequestBody InvoiceRequest request) {
-        InvoiceRequest found = service.addInvoice(request);
+        InvoiceResponse found = service.addInvoice(request);
         if (found == null) {
             return ResponseEntity.noContent().build();
         }
