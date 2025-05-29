@@ -21,7 +21,7 @@ public class UserService {
 
 
     public UserResponse getUserById(int userId) {
-        if (userId >= 0 && userId < userRepository.getAllUsers().size()) {
+        if (userId >= 0) {
             return userRepository.getUser(userId);
         }
         return null;
