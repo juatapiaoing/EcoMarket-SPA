@@ -31,7 +31,12 @@ public class UserRepository {//INICIO CODIGO
     }
 
     public UserResponse getUser(int userId) {
-        return users.get(userId);
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getId() == userId) {
+                return users.get(i);
+            }
+        }
+        return null;
     }
 
     public UserResponse addUser(UserRequest userRequest) {
