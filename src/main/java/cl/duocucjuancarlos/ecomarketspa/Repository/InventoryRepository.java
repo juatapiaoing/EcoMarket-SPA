@@ -6,11 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class InventoryRepository {
-
     private List<InventoryResponse> inventoryResponses;
 
     public InventoryRepository() {
@@ -20,20 +18,42 @@ public class InventoryRepository {
 
     //contiene logica de negocio
     public InventoryResponse updateProduct(int elementNumber, InventoryRequest inventoryRequest) {
-        inventoryResponses.get(elementNumber).setId(elementNumber);
-        inventoryResponses.get(elementNumber).setName(inventoryRequest.getName());
-        inventoryResponses.get(elementNumber).setDescription(inventoryRequest.getDescription());
-        inventoryResponses.get(elementNumber).setPrice(inventoryRequest.getPrice());
-        inventoryResponses.get(elementNumber).setQuantity(inventoryRequest.getQuantity());
-        return inventoryResponses.get(elementNumber);
-    }
+        if (elementNumber < 0 || elementNumber >= inventoryResponses.size()) {
+            return null;
+        }
 
-    public List<InventoryResponse> getInventoryResponses() {
-        return inventoryResponses;
+        InventoryResponse product = inventoryResponses.get(elementNumber);
+
+        boolean allNull = (inventoryRequest.getName() == null || inventoryRequest.getName().isEmpty())
+                && (inventoryRequest.getDescription() == null || inventoryRequest.getDescription().isEmpty())
+                && inventoryRequest.getPrice() <= 0
+                && inventoryRequest.getQuantity() <= 0;
+
+        if (allNull) {
+            return product; // No cambia nada
+        }
+
+        if (inventoryRequest.getName() != null && !inventoryRequest.getName().isEmpty()) {
+            product.setName(inventoryRequest.getName());
+        }
+        if (inventoryRequest.getDescription() != null && !inventoryRequest.getDescription().isEmpty()) {
+            product.setDescription(inventoryRequest.getDescription());
+        }
+        if (inventoryRequest.getPrice() > 0) {
+            product.setPrice(inventoryRequest.getPrice());
+        }
+        if (inventoryRequest.getQuantity() > 0) {
+            product.setQuantity(inventoryRequest.getQuantity());
+        }
+
+        return product;
     }
 
     public InventoryResponse getInventoryById(int id) {
-        return inventoryResponses.get(id);
+        if( id < 0 || id - 1 >= inventoryResponses.size()) {
+            return null;
+        }
+        return inventoryResponses.get(id - 1);
     }
 
 
@@ -49,7 +69,10 @@ public class InventoryRepository {
     }
 
     //contiene logica de negocio
-    public InventoryResponse deleteProduct(int elementNumber) {
-       return inventoryResponses.remove(elementNumber);
+    public InventoryResponse deleteProduct(int elementNumber) {return inventoryResponses.remove(elementNumber - 1);
+    }
+
+    public List<InventoryResponse> getInventoryResponses() {
+        return inventoryResponses;
     }
 }

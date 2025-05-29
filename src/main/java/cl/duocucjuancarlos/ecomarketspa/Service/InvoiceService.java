@@ -34,39 +34,82 @@ public class InvoiceService {
         return invoiceRepository.getAllInvoiceResponse();
     }
 
+    public InvoiceResponse getInvoiceById(int id) {
+        List<InvoiceResponse> invoices = invoiceRepository.getAllInvoiceResponse();
+        if (invoices == null) {
+            return null;
+        }
+        for (InvoiceResponse invoice : invoices) {
+            if (invoice.getId() == id) {
+                return invoice;
+            }
+        }
+        return null;
+    }
+
+
     public InvoiceResponse addInvoice(InvoiceRequest request) {
         int id = request.getId();
         List<InventoryResponse> listInventory = inventoryRepository.getInventoryResponses();
         List<OrderResponse> listOrder = orderRepository.getAllOrders();
         List<UserResponse> listUser = userRepository.getAllUsers();
 
-        if(id >= 0 && id < listOrder.size() && listOrder != null && listOrder.size() > 0){
-            String run = listUser.get(id).getRun();
-            String name = listUser.get(id).getFirstName() + " " + listUser.get(id).getLastName();
-            List<String> products = new ArrayList<>();
-            for (Integer productId : listOrder.get(id).getProductId()) {
-                // Busca el nombre del producto en el inventario
-                for (InventoryResponse inv : listInventory) {
-                    if (inv.getId() == productId) {
-                        products.add(inv.getName());
-                        break;
-                    }
-                }
-            }
-            double total = 0.0;
-            for (Integer productId : listOrder.get(id).getProductId()) {
-                for (InventoryResponse inv : listInventory) {
-                    if (inv.getId() == productId) {
-                        products.add(inv.getName());
-                        total += inv.getPrice(); // Suma el precio
-                        break;
-                    }
-                }
-            }
-            InvoiceResponse invoice = new InvoiceResponse(id, run, name, products, total);
-            invoiceRepository.addInvoice(invoice);
-            return invoice;
+        if (listInventory == null || listOrder == null || listUser == null) {
+            System.out.println("Alguna lista es nula");
+            return null;
         }
-        return null;
+        OrderResponse order = null;
+        for (OrderResponse o : listOrder) {
+            if (o.getUserId() == id) {
+                order = o;
+                break;
+            }
+        }
+        UserResponse user = null;
+        for (UserResponse u : listUser) {
+            if (u.getId() == id) {
+                user = u;
+                break;
+            }
+        }
+
+        if (order == null || user == null) {
+            System.out.println("Order o User es null");
+            return null;
+        }
+
+        String run = user.getRun();
+        String name = user.getFirstName() + " " + user.getLastName();
+        List<String> products = new ArrayList<>();
+        List<Integer> prices = new ArrayList<>();
+        int total = 0;
+
+        for (Integer productId : order.getProductId()) {
+            InventoryResponse inv = listInventory.stream()
+                    .filter(i -> i.getId() == productId)
+                    .findFirst()
+                    .orElse(null);
+            if (inv != null) {
+                products.add(inv.getName());
+                prices.add(inv.getPrice());
+                total += inv.getPrice();
+            }
+        }
+
+        if (products.isEmpty()) {
+            System.out.println("No se encontraron productos");
+            return null;
+        }
+
+        InvoiceResponse invoice = new InvoiceResponse();
+        invoice.setId(id);
+        invoice.setRun(run);
+        invoice.setName(name);
+        invoice.setProducts(products);
+        invoice.setPrices(prices);
+        invoice.setTotal(total);
+
+        invoiceRepository.addInvoice(invoice);
+        return invoice;
     }
 }

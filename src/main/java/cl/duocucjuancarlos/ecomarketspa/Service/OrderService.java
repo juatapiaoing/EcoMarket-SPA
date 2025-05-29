@@ -8,11 +8,8 @@ import cl.duocucjuancarlos.ecomarketspa.Repository.InventoryRepository;
 import cl.duocucjuancarlos.ecomarketspa.Repository.OrderRepository;
 import cl.duocucjuancarlos.ecomarketspa.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -86,12 +83,11 @@ public class OrderService {//inicio codigo
 
     public OrderResponse getOrderById(int id) {
         List<OrderResponse> orders = orderRepository.getAllOrders();
-        for (OrderResponse order : orders) {
-            if(order.getUserId() == id){
-                return order;
-            }
+        if (orders == null) {
+            return null;
         }
-        return null;
+       return orderRepository.getOrder(id);
+
     }
 
 //---------------------------------------------------------------------------------------------

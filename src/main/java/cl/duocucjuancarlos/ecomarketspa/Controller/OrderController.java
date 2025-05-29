@@ -24,15 +24,15 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrderById(@RequestParam int id) {
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable int id) {
         OrderResponse found = orderService.getOrderById(id);
-        if(found != null) {
+        if (found != null) {
             return ResponseEntity.ok(found);
         }
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/{userId}/Order")
+    @PostMapping("/{userId}/order")
     public ResponseEntity<OrderResponse> createOrder(@PathVariable int userId, @RequestBody OrderRequest orderRequest) {
         if (orderRequest != null) {
             return ResponseEntity.ok(orderService.createOrder(userId, orderRequest));
@@ -42,18 +42,17 @@ public class OrderController {
 
     @PutMapping("/{elementNumber}")
     public ResponseEntity<OrderResponse> updateOrder(@PathVariable int elementNumber, @RequestBody OrderRequest orderRequest) {
-        if (orderRequest != null) {
-        orderService.updateOrder(elementNumber, orderRequest);
-        return ResponseEntity.ok(orderService.getOrderById(elementNumber));
+        OrderResponse found = orderService.updateOrder(elementNumber, orderRequest);
+        if (found != null) {
+            return ResponseEntity.ok(found);
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{elementNumber}")
     public ResponseEntity<OrderResponse> deleteOrder(@PathVariable int elementNumber) {
-        OrderResponse found = orderService.getOrderById(elementNumber);
+        OrderResponse found = orderService.deleteOrder(elementNumber);
         if(found != null) {
-            orderService.deleteOrder(elementNumber);
             return ResponseEntity.ok(found);
         }
         return ResponseEntity.notFound().build();

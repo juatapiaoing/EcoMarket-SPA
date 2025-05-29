@@ -14,12 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 public class InvoiceResponse {
     private int id;
-    private int run;
+    private String run;
     private String name;
     private List<String> products;
     private List<Integer> prices;
-    private int total;
+    private Integer total;
 
-    public InvoiceResponse(int id, String run, String name, List<String> products, double total) {
-    }
 }

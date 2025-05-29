@@ -16,7 +16,13 @@ public class OrderRepository {
     public List<OrderResponse> getAllOrders() { return orders;}
 
     public OrderResponse getOrder(int userId) {
-        return orders.get(userId);
+        for (OrderResponse order : orders) {
+            if (order.getUserId() == userId) {
+                this.order = order;
+                break;
+            }
+        }
+        return this.order;
     }
 
 
@@ -31,13 +37,24 @@ public class OrderRepository {
 
 
     public OrderResponse updateOrder(int userId, OrderRequest orderRequest) {
-           orders.get(userId).setProductId(new ArrayList<>(orderRequest.getProductId()));
-           return orders.get(userId);
+           for (OrderResponse order : orders) {
+                if (order.getUserId() == userId) {
+                    order.setProductId(new ArrayList<>(orderRequest.getProductId()));
+                    return order;
+                }
+           }
+           return null;
     }
 
 
 
     public OrderResponse deleteOrder(int userId) {
-        return orders.remove(userId);
+        for( OrderResponse order : orders) {
+            if (order.getUserId() == userId) {
+                orders.remove(order);
+                return order;
+            }
+        }
+        return null;
     }
 }

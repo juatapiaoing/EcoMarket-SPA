@@ -24,6 +24,15 @@ public class InvoiceController {
         return ResponseEntity.ok(service.getAllInvoices());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<InvoiceResponse> getInvoiceById(@PathVariable int id) {
+        InvoiceResponse found = service.getInvoiceById(id);
+        if (found == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(found);
+    }
+
     @PostMapping("/newInvoice")
     public ResponseEntity<InvoiceResponse> newInvoice(@RequestBody InvoiceRequest request) {
         InvoiceResponse found = service.addInvoice(request);
