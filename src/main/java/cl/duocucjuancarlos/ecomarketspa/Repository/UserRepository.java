@@ -31,9 +31,9 @@ public class UserRepository {//INICIO CODIGO
     }
 
     public UserResponse getUser(int userId) {
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId() == userId) {
-                return users.get(i);
+        for (UserResponse user : users) {
+            if (user.getId() == userId) {
+                return user;
             }
         }
         return null;
