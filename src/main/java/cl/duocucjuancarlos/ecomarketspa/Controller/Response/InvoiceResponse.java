@@ -19,5 +19,4 @@ public class InvoiceResponse {
     private List<String> products;
     private List<Integer> prices;
     private Integer total;
-
 }

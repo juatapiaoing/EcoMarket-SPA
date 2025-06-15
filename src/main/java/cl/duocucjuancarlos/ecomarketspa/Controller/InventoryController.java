@@ -13,53 +13,41 @@ import java.util.List;
 @RequestMapping("/api/v1/inventory")
 
 public class InventoryController {//INICIO CODIGO
-    @Autowired
-    private InventoryService inventoryService;
-//-----------------------------------------------------------------------------------------------
+                @Autowired
+                private InventoryService inventoryService;
 
-    @GetMapping
-    public ResponseEntity<List<InventoryResponse>> getInventory() {
-        return ResponseEntity.ok(inventoryService.getInventory());
-    }
-//-----------------------------------------------------------------------------------------------
+                @GetMapping
+                public ResponseEntity<List<InventoryResponse>> getAllInventory() {
+                    return ResponseEntity.ok(inventoryService.getAllInventory());
+                }
 
-    @GetMapping("/{elementNumber}")
-    public ResponseEntity<InventoryResponse> getInventory(@PathVariable int elementNumber) {
-        InventoryResponse found = inventoryService.getInventoryById(elementNumber);
-        if (found == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(found);
-    }
-//-----------------------------------------------------------------------------------------------
-    @PostMapping("/add")
-     public ResponseEntity<InventoryRequest> addInventory(@RequestBody InventoryRequest inventoryRequest) {
-        InventoryRequest found = inventoryService.addInventory(inventoryRequest);
-        if (found != null) {
-            return ResponseEntity.ok(found);
-        }
-        return ResponseEntity.notFound().build();
-    }
-//-----------------------------------------------------------------------------------------------
+                @GetMapping("/{id}")
+                public ResponseEntity<InventoryResponse> getInventoryById(@PathVariable int id) {
+                    InventoryResponse inv = inventoryService.getInventoryById(id);
+                    if (inv == null) return ResponseEntity.notFound().build();
+                    return ResponseEntity.ok(inv);
+                }
 
-    @PutMapping("/{elementNumber}")
-    public ResponseEntity<InventoryResponse> updateInventory(@PathVariable int elementNumber, @RequestBody InventoryRequest inventoryRequest) {
-        InventoryResponse found = inventoryService.updateInventory(elementNumber, inventoryRequest);
-        if (found == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(found);
-    }
-//-----------------------------------------------------------------------------------------------
+                @PostMapping
+                public ResponseEntity<InventoryResponse> addProduct(@RequestBody InventoryRequest inventoryRequest) {
+                    InventoryResponse inv = inventoryService.addProduct(inventoryRequest);
+                    if (inv == null) return ResponseEntity.badRequest().build();
+                    return ResponseEntity.status(201).body(inv);
+                }
 
-    @DeleteMapping("/{elementNumber}")
-    public ResponseEntity<InventoryResponse> deleteInventory(@PathVariable int elementNumber) {
-        InventoryResponse found = inventoryService.deleteInventory(elementNumber);
-        if (found == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(found);
-    }
+                @PutMapping("/{id}")
+                public ResponseEntity<InventoryResponse> updateProduct(@PathVariable int id, @RequestBody InventoryRequest inventoryRequest) {
+                    InventoryResponse inv = inventoryService.updateProduct(id, inventoryRequest);
+                    if (inv == null) return ResponseEntity.notFound().build();
+                    return ResponseEntity.ok(inv);
+                }
+
+                @DeleteMapping("/{id}")
+                public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
+                    InventoryResponse inv = inventoryService.deleteProduct(id);
+                    if (inv == null) return ResponseEntity.notFound().build();
+                    return ResponseEntity.noContent().build();
+                }
 //-----------------------------------------------------------------------------------------------
 
 }//FIN CODIGO

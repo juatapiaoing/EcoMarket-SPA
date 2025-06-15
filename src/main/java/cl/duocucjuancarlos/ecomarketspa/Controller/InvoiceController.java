@@ -14,33 +14,32 @@ import java.util.List;
 @RequestMapping("api/v1/invoices")
 public class InvoiceController {
     @Autowired
-    private InvoiceService service;
+    private InvoiceService invoiceService;
 
     @GetMapping
     public ResponseEntity<List<InvoiceResponse>> getAllInvoices() {
-        if (service.getAllInvoices() == null) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(service.getAllInvoices());
+        return ResponseEntity.ok(invoiceService.getAllInvoices());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<InvoiceResponse> getInvoiceById(@PathVariable int id) {
-        InvoiceResponse found = service.getInvoiceById(id);
-        if (found == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(found);
+    @GetMapping("/{invoiceId}")
+    public ResponseEntity<InvoiceResponse> getInvoiceById(@PathVariable int invoiceId) {
+        InvoiceResponse invoice = invoiceService.getInvoiceById(invoiceId);
+        if (invoice == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(invoice);
     }
 
-    @PostMapping("/newInvoice")
-    public ResponseEntity<InvoiceResponse> newInvoice(@RequestBody InvoiceRequest request) {
-        InvoiceResponse found = service.addInvoice(request);
-        if (found == null) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(found);
+    @PostMapping
+    public ResponseEntity<InvoiceResponse> addInvoice(@RequestBody InvoiceRequest invoiceRequest) {
+        InvoiceResponse invoice = invoiceService.addInvoice(invoiceRequest);
+        if (invoice == null) return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(201).body(invoice);
     }
 
+    @DeleteMapping("/{invoiceId}")
+    public ResponseEntity<Void> deleteInvoice(@PathVariable int invoiceId) {
+        InvoiceResponse invoice = invoiceService.deleteInvoice(invoiceId);
+        if (invoice == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
+    }
 
 }

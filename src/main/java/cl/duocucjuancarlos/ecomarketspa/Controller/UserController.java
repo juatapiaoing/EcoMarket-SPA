@@ -14,42 +14,36 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getAllUsers(){
-        return ResponseEntity.ok(userService.findAllUsers());
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> users = userService.findAllUsers();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable int userId){
-        if (userService.getUserById(userId) == null){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(userService.getUserById(userId));
+    public ResponseEntity<UserResponse> getUserById(@PathVariable int userId) {
+        UserResponse user = userService.getUserById(userId);
+        if (user == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/addUser")
-    public ResponseEntity<UserResponse> addUser(@RequestBody UserRequest userRequest){
-        UserResponse found = userService.addNewUser(userRequest);
-        if (found != null){
-            return ResponseEntity.ok(found);
-        }
-        return ResponseEntity.badRequest().build();
+    @PostMapping
+    public ResponseEntity<UserResponse> addUser(@RequestBody UserRequest userRequest) {
+        UserResponse user = userService.addNewUser(userRequest);
+        if (user == null) return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(201).body(user);
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable int userId, @RequestBody UserRequest userRequest){
-        UserResponse found = userService.updateUserById(userId, userRequest);
-        if (found != null){
-            return ResponseEntity.ok(found);
-        }
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<UserResponse> updateUser(@PathVariable int userId, @RequestBody UserRequest userRequest) {
+        UserResponse user = userService.updateUserById(userId, userRequest);
+        if (user == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<UserResponse> deleteUser(@PathVariable int userId){
-        UserResponse found = userService.deleteUserById(userId);
-        if (found != null){
-            return ResponseEntity.ok(found);
-        }
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<Void> deleteUser(@PathVariable int userId) {
+        UserResponse user = userService.deleteUserById(userId);
+        if (user == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 }

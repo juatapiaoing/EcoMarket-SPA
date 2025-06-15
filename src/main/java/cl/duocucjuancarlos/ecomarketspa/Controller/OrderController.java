@@ -16,46 +16,39 @@ public class OrderController {
     //---------------------------------------------------------------------------------------------
     // Crear un nuevo pedido
     @Autowired
-    OrderService orderService;
+    private OrderService orderService;
 
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable int id) {
-        OrderResponse found = orderService.getOrderById(id);
-        if (found != null) {
-            return ResponseEntity.ok(found);
-        }
-        return ResponseEntity.notFound().build();
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable int orderId) {
+        OrderResponse order = orderService.getOrderById(orderId);
+        if (order == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(order);
     }
 
-    @PostMapping("/{userId}/order")
-    public ResponseEntity<OrderResponse> createOrder(@PathVariable int userId, @RequestBody OrderRequest orderRequest) {
-        if (orderRequest != null) {
-            return ResponseEntity.ok(orderService.createOrder(userId, orderRequest));
-        }
-        return ResponseEntity.badRequest().build();
+    @PostMapping("/{userId}")
+    public ResponseEntity<OrderResponse> addOrder(@PathVariable int userId, @RequestBody OrderRequest orderRequest) {
+        OrderResponse order = orderService.addOrder(userId, orderRequest);
+        if (order == null) return ResponseEntity.badRequest().build();
+        return ResponseEntity.status(201).body(order);
     }
 
-    @PutMapping("/{elementNumber}")
-    public ResponseEntity<OrderResponse> updateOrder(@PathVariable int elementNumber, @RequestBody OrderRequest orderRequest) {
-        OrderResponse found = orderService.updateOrder(elementNumber, orderRequest);
-        if (found != null) {
-            return ResponseEntity.ok(found);
-        }
-        return ResponseEntity.notFound().build();
+    @PutMapping("/{orderId}")
+    public ResponseEntity<OrderResponse> updateOrder(@PathVariable int orderId, @RequestBody OrderRequest orderRequest) {
+        OrderResponse order = orderService.updateOrder(orderId, orderRequest);
+        if (order == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(order);
     }
 
-    @DeleteMapping("/{elementNumber}")
-    public ResponseEntity<OrderResponse> deleteOrder(@PathVariable int elementNumber) {
-        OrderResponse found = orderService.deleteOrder(elementNumber);
-        if(found != null) {
-            return ResponseEntity.ok(found);
-        }
-        return ResponseEntity.notFound().build();
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable int orderId) {
+        OrderResponse order = orderService.deleteOrder(orderId);
+        if (order == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

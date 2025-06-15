@@ -4,13 +4,15 @@ import cl.duocucjuancarlos.ecomarketspa.Controller.Request.OrderRequest;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.InventoryResponse;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.OrderResponse;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.UserResponse;
-import cl.duocucjuancarlos.ecomarketspa.Repository.InventoryRepository;
+import cl.duocucjuancarlos.ecomarketspa.Model.Order;
+import cl.duocucjuancarlos.ecomarketspa.Model.User;
 import cl.duocucjuancarlos.ecomarketspa.Repository.OrderRepository;
 import cl.duocucjuancarlos.ecomarketspa.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,74 +24,44 @@ public class OrderService {//inicio codigo
     private OrderRepository orderRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private InventoryRepository inventoryRepository;
 
-
-
-    public OrderResponse createOrder(int userId, OrderRequest request) {
-        if (request == null || request.getProductId() == null || request.getProductId().isEmpty()) {
-            return null;
-        }
-
-        List<UserResponse> users = userRepository.getAllUsers();
-        boolean userExists = users.stream()
-                .anyMatch(user -> user.getId() == userId);
-        if (!userExists) {
-            return null;
-        }
-        List<InventoryResponse> inventory = inventoryRepository.getInventoryResponses();
-
-        Set<Integer> validProductId = inventory.stream()
-                .map(InventoryResponse::getId)
-                .collect(Collectors.toSet());
-
-        for (Integer id : request.getProductId()) {
-            if (!validProductId.contains(id)) {
-                return null;
-            }
-        }
-        return orderRepository.addOrder(userId, request);
-    }
-
-    public OrderResponse updateOrder(int orderId, OrderRequest request) {
-        List<UserResponse> users = userRepository.getAllUsers();
-        List<OrderResponse> orders = orderRepository.getAllOrders();
-        if (request == null) {
-            return null;
-        }
-        for (OrderResponse order : orders) {
-            if(order.getUserId() == orderId){
-                return orderRepository.updateOrder(orderId, request);
-            }
-        }
-        return null;
-    }
-    
-    public OrderResponse deleteOrder(int orderId) {
-        List<UserResponse> users = userRepository.getAllUsers();
-        List<OrderResponse> orders = orderRepository.getAllOrders();
-        for (OrderResponse order : orders) {
-            if(order.getUserId() == orderId){
-                return orderRepository.deleteOrder(orderId);
-            }
-        }
-        return null;
+    private OrderResponse toResponse(Order order) {
+        return new OrderResponse(order.getUser().getId(), order.getProductId());
     }
 
     public List<OrderResponse> getAllOrders() {
-        return orderRepository.getAllOrders();
+        return orderRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
 
     public OrderResponse getOrderById(int id) {
-        List<OrderResponse> orders = orderRepository.getAllOrders();
-        if (orders == null) {
-            return null;
-        }
-       return orderRepository.getOrder(id);
-
+        Optional<Order> order = orderRepository.findById(id);
+        return order.map(this::toResponse).orElse(null);
     }
 
+    public OrderResponse addOrder(int userId, OrderRequest orderRequest) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) return null;
+        Order order = new Order(null, userOpt.get(), orderRequest.getProductId());
+        order = orderRepository.save(order);
+        return toResponse(order);
+    }
+
+    public OrderResponse updateOrder(int orderId, OrderRequest orderRequest) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isEmpty() || orderRequest == null) return null;
+        Order order = optionalOrder.get();
+        order.setProductId(orderRequest.getProductId());
+        order = orderRepository.save(order);
+        return toResponse(order);
+    }
+
+    public OrderResponse deleteOrder(int orderId) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isEmpty()) return null;
+        Order order = optionalOrder.get();
+        orderRepository.delete(order);
+        return toResponse(order);
+    }
 //---------------------------------------------------------------------------------------------
 
 }

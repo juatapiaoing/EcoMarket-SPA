@@ -1,115 +1,85 @@
 package cl.duocucjuancarlos.ecomarketspa.Service;
 
+import cl.duocucjuancarlos.ecomarketspa.Controller.Request.InventoryRequest;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Request.InvoiceRequest;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.InventoryResponse;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.InvoiceResponse;
-import cl.duocucjuancarlos.ecomarketspa.Controller.Response.OrderResponse;
-import cl.duocucjuancarlos.ecomarketspa.Controller.Response.UserResponse;
+import cl.duocucjuancarlos.ecomarketspa.Model.Inventory;
+import cl.duocucjuancarlos.ecomarketspa.Model.Invoice;
+import cl.duocucjuancarlos.ecomarketspa.Model.Order;
+import cl.duocucjuancarlos.ecomarketspa.Model.User;
 import cl.duocucjuancarlos.ecomarketspa.Repository.InventoryRepository;
 import cl.duocucjuancarlos.ecomarketspa.Repository.InvoiceRepository;
 import cl.duocucjuancarlos.ecomarketspa.Repository.OrderRepository;
-import cl.duocucjuancarlos.ecomarketspa.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class InvoiceService {
     @Autowired
     private InvoiceRepository invoiceRepository;
     @Autowired
-    private InventoryRepository inventoryRepository;
-    @Autowired
     private OrderRepository orderRepository;
     @Autowired
-    private UserRepository userRepository;
+    private InventoryRepository inventoryRepository;
 
+    private InvoiceResponse toResponse(Invoice invoice) {
+        return new InvoiceResponse(
+                invoice.getId(),
+                invoice.getRun(),
+                invoice.getName(),
+                invoice.getProducts(),
+                invoice.getPrices(),
+                invoice.getTotal()
+        );
+    }
 
     public List<InvoiceResponse> getAllInvoices() {
-        if (invoiceRepository.getAllInvoiceResponse() == null){
-            return null;
-        }
-        return invoiceRepository.getAllInvoiceResponse();
+        return invoiceRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
 
     public InvoiceResponse getInvoiceById(int id) {
-        List<InvoiceResponse> invoices = invoiceRepository.getAllInvoiceResponse();
-        if (invoices == null) {
-            return null;
-        }
-        for (InvoiceResponse invoice : invoices) {
-            if (invoice.getId() == id) {
-                return invoice;
-            }
-        }
-        return null;
+        Optional<Invoice> invoice = invoiceRepository.findById(id);
+        return invoice.map(this::toResponse).orElse(null);
     }
 
-
     public InvoiceResponse addInvoice(InvoiceRequest request) {
-        int id = request.getId();
-        List<InventoryResponse> listInventory = inventoryRepository.getInventoryResponses();
-        List<OrderResponse> listOrder = orderRepository.getAllOrders();
-        List<UserResponse> listUser = userRepository.getAllUsers();
-
-        if (listInventory == null || listOrder == null || listUser == null) {
-            System.out.println("Alguna lista es nula");
+        if (request == null || request.getOrderId() == null) {
             return null;
         }
-        OrderResponse order = null;
-        for (OrderResponse o : listOrder) {
-            if (o.getUserId() == id) {
-                order = o;
-                break;
-            }
-        }
-        UserResponse user = null;
-        for (UserResponse u : listUser) {
-            if (u.getId() == id) {
-                user = u;
-                break;
-            }
-        }
+        Optional<Order> orderOpt = orderRepository.findById(request.getOrderId());
+        if (orderOpt.isEmpty()) return null;
+        Order order = orderOpt.get();
 
-        if (order == null || user == null) {
-            System.out.println("Order o User es null");
-            return null;
-        }
+        User user = order.getUser();
+        List<Integer> productIds = order.getProductId();
+        List<Inventory> inventories = inventoryRepository.findAllById(productIds);
 
-        String run = user.getRun();
-        String name = user.getFirstName() + " " + user.getLastName();
-        List<String> products = new ArrayList<>();
-        List<Integer> prices = new ArrayList<>();
-        int total = 0;
+        List<String> productNames = inventories.stream().map(Inventory::getName).collect(Collectors.toList());
+        List<Integer> prices = inventories.stream().map(Inventory::getPrice).collect(Collectors.toList());
+        int total = prices.stream().mapToInt(Integer::intValue).sum();
 
-        for (Integer productId : order.getProductId()) {
-            InventoryResponse inv = listInventory.stream()
-                    .filter(i -> i.getId() == productId)
-                    .findFirst()
-                    .orElse(null);
-            if (inv != null) {
-                products.add(inv.getName());
-                prices.add(inv.getPrice());
-                total += inv.getPrice();
-            }
-        }
+        Invoice invoice = new Invoice(
+                null,
+                user.getRun(),
+                user.getFirstName() + " " + user.getLastName(),
+                productNames,
+                prices,
+                total
+        );
+        Invoice saved = invoiceRepository.save(invoice);
+        return toResponse(saved);
+    }
 
-        if (products.isEmpty()) {
-            System.out.println("No se encontraron productos");
-            return null;
-        }
-
-        InvoiceResponse invoice = new InvoiceResponse();
-        invoice.setId(id);
-        invoice.setRun(run);
-        invoice.setName(name);
-        invoice.setProducts(products);
-        invoice.setPrices(prices);
-        invoice.setTotal(total);
-
-        invoiceRepository.addInvoice(invoice);
-        return invoice;
+    public InvoiceResponse deleteInvoice(int id) {
+        Optional<Invoice> optionalInvoice = invoiceRepository.findById(id);
+        if (optionalInvoice.isEmpty()) return null;
+        Invoice invoice = optionalInvoice.get();
+        invoiceRepository.delete(invoice);
+        return toResponse(invoice);
     }
 }
