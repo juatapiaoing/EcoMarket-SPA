@@ -2,28 +2,26 @@ package cl.duocucjuancarlos.ecomarketspa.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Date;
 
 @Entity
-@Table(name = "facturas")
+@Table(name = "detalle_orden")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class Invoice {
+public class OrderDetail {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "factura_id")
+    @Column(name = "detalle_id")
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private User usuario;
-
-    @OneToOne
     @JoinColumn(name = "orden_id")
     private Order orden;
 
-    @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaEmision;
+    @ManyToOne
+    @JoinColumn(name = "stock_id")
+    private Stock stock;
 
     @Column(nullable = false)
-    private Integer totalPedido;
+    private Integer cantidad;
+
+    @Column(nullable = false)
+    private Integer precioUnitario;
 }

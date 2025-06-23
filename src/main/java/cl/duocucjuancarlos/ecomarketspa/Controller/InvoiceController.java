@@ -1,6 +1,5 @@
 package cl.duocucjuancarlos.ecomarketspa.Controller;
 
-
 import cl.duocucjuancarlos.ecomarketspa.Controller.Request.InvoiceRequest;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.InvoiceResponse;
 import cl.duocucjuancarlos.ecomarketspa.Service.InvoiceService;
@@ -11,35 +10,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/invoices")
+@RequestMapping("/api/facturas")
 public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
+    @PostMapping
+    public ResponseEntity<InvoiceResponse> create(@RequestBody InvoiceRequest request) {
+        return ResponseEntity.ok(invoiceService.createInvoice(request));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<InvoiceResponse> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(invoiceService.getInvoiceById(id));
+    }
+
     @GetMapping
-    public ResponseEntity<List<InvoiceResponse>> getAllInvoices() {
+    public ResponseEntity<List<InvoiceResponse>> getAll() {
         return ResponseEntity.ok(invoiceService.getAllInvoices());
     }
 
-    @GetMapping("/{invoiceId}")
-    public ResponseEntity<InvoiceResponse> getInvoiceById(@PathVariable int invoiceId) {
-        InvoiceResponse invoice = invoiceService.getInvoiceById(invoiceId);
-        if (invoice == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(invoice);
+    @PutMapping("/{id}")
+    public ResponseEntity<InvoiceResponse> update(@PathVariable Integer id, @RequestBody InvoiceRequest request) {
+        return ResponseEntity.ok(invoiceService.updateInvoice(id, request));
     }
 
-    @PostMapping
-    public ResponseEntity<InvoiceResponse> addInvoice(@RequestBody InvoiceRequest invoiceRequest) {
-        InvoiceResponse invoice = invoiceService.addInvoice(invoiceRequest);
-        if (invoice == null) return ResponseEntity.badRequest().build();
-        return ResponseEntity.status(201).body(invoice);
-    }
-
-    @DeleteMapping("/{invoiceId}")
-    public ResponseEntity<Void> deleteInvoice(@PathVariable int invoiceId) {
-        InvoiceResponse invoice = invoiceService.deleteInvoice(invoiceId);
-        if (invoice == null) return ResponseEntity.notFound().build();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        invoiceService.deleteInvoice(id);
         return ResponseEntity.noContent().build();
     }
-
 }

@@ -1,22 +1,14 @@
 package cl.duocucjuancarlos.ecomarketspa.Controller.Response;
 
+import lombok.Data;
+import java.util.Date;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.List;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 public class InvoiceResponse {
-    private int id;
-    private String run;
-    private String name;
-    private List<String> products;
-    private List<Integer> prices;
-    private Integer total;
+    private Integer id;
+    private Integer usuarioId;
+    private String usuarioNombre;
+    private Integer ordenId;
+    private Date fechaEmision;
+    private Integer totalPedido;
 }

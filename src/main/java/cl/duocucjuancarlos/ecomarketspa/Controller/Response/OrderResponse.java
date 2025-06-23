@@ -1,19 +1,16 @@
 package cl.duocucjuancarlos.ecomarketspa.Controller.Response;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.ArrayList;
+import lombok.Data;
+import java.util.Date;
 import java.util.List;
 
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 public class OrderResponse {
-    private int userId;
-    private List<Integer> productId = new ArrayList<>();
+    private Integer id;
+    private Integer usuarioId;
+    private String usuarioNombre;
+    private Date fechaCreacion;
+    private String estado;
+    private List<OrderDetailResponse> detalles;
 }
+

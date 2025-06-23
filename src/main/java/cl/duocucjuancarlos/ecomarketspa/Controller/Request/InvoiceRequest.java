@@ -1,14 +1,9 @@
 package cl.duocucjuancarlos.ecomarketspa.Controller.Request;
+import lombok.Data;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.List;
-
-@Getter
-@Setter
+@Data
 public class InvoiceRequest {
-    private Integer orderId;
+    private Integer usuarioId;
+    private Integer ordenId;
+    private Integer totalPedido;
 }

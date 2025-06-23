@@ -1,19 +1,13 @@
 package cl.duocucjuancarlos.ecomarketspa.Controller.Response;
+import lombok.Data;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 public class UserResponse {
-    private int id;
+    private Integer id;
     private String run;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
+    private String nombre;
+    private String apellido;
+    private String correo;
+    private String telefono;
+    private String rol; // Nombre del rol
 }

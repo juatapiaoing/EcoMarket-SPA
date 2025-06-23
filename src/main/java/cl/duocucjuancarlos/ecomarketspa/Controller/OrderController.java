@@ -9,46 +9,35 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController  //esto sirve para hacer funcionar el postman
-@RequestMapping("/api/v1/orders")// esto es para llamarlo en el postman
-
+@RestController
+@RequestMapping("/api/ordenes")
 public class OrderController {
-    //---------------------------------------------------------------------------------------------
-    // Crear un nuevo pedido
     @Autowired
     private OrderService orderService;
 
+    @PostMapping
+    public ResponseEntity<OrderResponse> create(@RequestBody OrderRequest request) {
+        return ResponseEntity.ok(orderService.createOrder(request));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponse> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
+    }
+
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+    public ResponseEntity<List<OrderResponse>> getAll() {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
-    @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable int orderId) {
-        OrderResponse order = orderService.getOrderById(orderId);
-        if (order == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(order);
+    @PutMapping("/{id}")
+    public ResponseEntity<OrderResponse> update(@PathVariable Integer id, @RequestBody OrderRequest request) {
+        return ResponseEntity.ok(orderService.updateOrder(id, request));
     }
 
-    @PostMapping("/{userId}")
-    public ResponseEntity<OrderResponse> addOrder(@PathVariable int userId, @RequestBody OrderRequest orderRequest) {
-        OrderResponse order = orderService.addOrder(userId, orderRequest);
-        if (order == null) return ResponseEntity.badRequest().build();
-        return ResponseEntity.status(201).body(order);
-    }
-
-    @PutMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> updateOrder(@PathVariable int orderId, @RequestBody OrderRequest orderRequest) {
-        OrderResponse order = orderService.updateOrder(orderId, orderRequest);
-        if (order == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(order);
-    }
-
-    @DeleteMapping("/{orderId}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable int orderId) {
-        OrderResponse order = orderService.deleteOrder(orderId);
-        if (order == null) return ResponseEntity.notFound().build();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
     }
-
 }

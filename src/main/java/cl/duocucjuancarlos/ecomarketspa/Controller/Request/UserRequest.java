@@ -1,19 +1,14 @@
 package cl.duocucjuancarlos.ecomarketspa.Controller.Request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-
+@Data
 public class UserRequest {
     private String run;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
+    private String nombre;
+    private String apellido;
+    private String correo;
+    private String telefono;
+    private String password;
+    private Integer rolId;
 }

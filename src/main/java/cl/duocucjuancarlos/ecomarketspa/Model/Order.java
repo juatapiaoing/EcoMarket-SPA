@@ -1,31 +1,32 @@
 package cl.duocucjuancarlos.ecomarketspa.Model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "orders")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "ordenes")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Order {
-
-    @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "orden_id")
     private Integer id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private User usuario;
 
-    @ElementCollection
-    @CollectionTable(name = "order_products", joinColumns = @JoinColumn(name = "order_id"))
-    @Column(name = "product_id")
-    private List<Integer> productId;
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaCreacion;
+
+    @Column(nullable = false)
+    private String estado;
+
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL)
+    private List<OrderDetail> detalles;
+
+    @OneToOne(mappedBy = "orden")
+    private Invoice factura;
 }
