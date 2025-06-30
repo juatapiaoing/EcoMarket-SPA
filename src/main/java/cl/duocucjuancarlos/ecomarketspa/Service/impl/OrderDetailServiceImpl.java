@@ -9,8 +9,8 @@ import cl.duocucjuancarlos.ecomarketspa.Repository.OrderDetailRepository;
 import cl.duocucjuancarlos.ecomarketspa.Repository.OrderRepository;
 import cl.duocucjuancarlos.ecomarketspa.Repository.StockRepository;
 import cl.duocucjuancarlos.ecomarketspa.Service.OrderDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,15 +18,19 @@ import java.util.stream.Collectors;
 @Service
 public class OrderDetailServiceImpl implements OrderDetailService {
 
-    @Autowired
-    private OrderDetailRepository orderDetailRepository;
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private StockRepository stockRepository;
+    private final OrderDetailRepository orderDetailRepository;
+    private final OrderRepository orderRepository;
+    private final StockRepository stockRepository;
+
+    public OrderDetailServiceImpl(OrderDetailRepository orderDetailRepository, OrderRepository orderRepository, StockRepository stockRepository) {
+        this.orderDetailRepository = orderDetailRepository;
+        this.orderRepository = orderRepository;
+        this.stockRepository = stockRepository;
+    }
 
     private OrderDetailResponse toResponse(OrderDetail detail) {
         OrderDetailResponse res = new OrderDetailResponse();
+        res.setId(detail.getOrden().getId());
         res.setStockId(detail.getStock().getId());
         res.setProductoNombre(detail.getStock().getProducto().getNombre());
         res.setCantidad(detail.getCantidad());
@@ -35,27 +39,31 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
+    @Transactional
     public OrderDetailResponse createOrderDetail(OrderDetailRequest request) {
-        OrderDetail detail = new OrderDetail();
         Order order = orderRepository.findById(request.getOrdenId())
-                .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada con ID: " + request.getOrdenId()));
         Stock stock = stockRepository.findById(request.getStockId())
-                .orElseThrow(() -> new RuntimeException("Stock no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Stock no encontrado con ID: " + request.getStockId()));
+
+        OrderDetail detail = new OrderDetail();
         detail.setOrden(order);
         detail.setStock(stock);
         detail.setCantidad(request.getCantidad());
         detail.setPrecioUnitario(request.getPrecioUnitario());
-        return toResponse(orderDetailRepository.save(detail));
+
+        OrderDetail savedDetail = orderDetailRepository.save(detail);
+        return toResponse(savedDetail);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderDetailResponse getOrderDetailById(Integer id) {
-        OrderDetail detail = orderDetailRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
-        return toResponse(detail);
+        return orderDetailRepository.findById(id).map(this::toResponse).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderDetailResponse> getAllOrderDetails() {
         return orderDetailRepository.findAll().stream()
                 .map(this::toResponse)
@@ -63,22 +71,31 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
+    @Transactional
     public OrderDetailResponse updateOrderDetail(Integer id, OrderDetailRequest request) {
         OrderDetail detail = orderDetailRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Detalle de orden no encontrado con ID: " + id));
+
         Order order = orderRepository.findById(request.getOrdenId())
-                .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada con ID: " + request.getOrdenId()));
         Stock stock = stockRepository.findById(request.getStockId())
-                .orElseThrow(() -> new RuntimeException("Stock no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Stock no encontrado con ID: " + request.getStockId()));
+
         detail.setOrden(order);
         detail.setStock(stock);
         detail.setCantidad(request.getCantidad());
         detail.setPrecioUnitario(request.getPrecioUnitario());
-        return toResponse(orderDetailRepository.save(detail));
+
+        OrderDetail updatedDetail = orderDetailRepository.save(detail);
+        return toResponse(updatedDetail);
     }
 
     @Override
+    @Transactional
     public void deleteOrderDetail(Integer id) {
+        if (!orderDetailRepository.existsById(id)) {
+            throw new RuntimeException("No se puede eliminar. Detalle de orden no encontrado con ID: " + id);
+        }
         orderDetailRepository.deleteById(id);
     }
 }

@@ -9,8 +9,8 @@ import cl.duocucjuancarlos.ecomarketspa.Repository.InvoiceRepository;
 import cl.duocucjuancarlos.ecomarketspa.Repository.OrderRepository;
 import cl.duocucjuancarlos.ecomarketspa.Repository.UserRepository;
 import cl.duocucjuancarlos.ecomarketspa.Service.InvoiceService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -19,12 +19,15 @@ import java.util.stream.Collectors;
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
 
-    @Autowired
-    private InvoiceRepository invoiceRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private OrderRepository orderRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+
+    public InvoiceServiceImpl(InvoiceRepository invoiceRepository, UserRepository userRepository, OrderRepository orderRepository) {
+        this.invoiceRepository = invoiceRepository;
+        this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
+    }
 
     private InvoiceResponse toResponse(Invoice invoice) {
         InvoiceResponse res = new InvoiceResponse();
@@ -38,27 +41,31 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    @Transactional
     public InvoiceResponse createInvoice(InvoiceRequest request) {
-        Invoice invoice = new Invoice();
         User usuario = userRepository.findById(request.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + request.getUsuarioId()));
         Order orden = orderRepository.findById(request.getOrdenId())
-                .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada con ID: " + request.getOrdenId()));
+
+        Invoice invoice = new Invoice();
         invoice.setUsuario(usuario);
         invoice.setOrden(orden);
         invoice.setFechaEmision(new Date());
         invoice.setTotalPedido(request.getTotalPedido());
-        return toResponse(invoiceRepository.save(invoice));
+
+        Invoice savedInvoice = invoiceRepository.save(invoice);
+        return toResponse(savedInvoice);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public InvoiceResponse getInvoiceById(Integer id) {
-        Invoice invoice = invoiceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
-        return toResponse(invoice);
+        return invoiceRepository.findById(id).map(this::toResponse).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<InvoiceResponse> getAllInvoices() {
         return invoiceRepository.findAll().stream()
                 .map(this::toResponse)
@@ -66,22 +73,30 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    @Transactional
     public InvoiceResponse updateInvoice(Integer id, InvoiceRequest request) {
         Invoice invoice = invoiceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Factura no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Factura no encontrada con ID: " + id));
+
         User usuario = userRepository.findById(request.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + request.getUsuarioId()));
         Order orden = orderRepository.findById(request.getOrdenId())
-                .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada con ID: " + request.getOrdenId()));
+
         invoice.setUsuario(usuario);
         invoice.setOrden(orden);
         invoice.setTotalPedido(request.getTotalPedido());
-        // No actualizamos la fechaEmision aquí
-        return toResponse(invoiceRepository.save(invoice));
+
+        Invoice updatedInvoice = invoiceRepository.save(invoice);
+        return toResponse(updatedInvoice);
     }
 
     @Override
+    @Transactional
     public void deleteInvoice(Integer id) {
+        if (!invoiceRepository.existsById(id)) {
+            throw new RuntimeException("No se puede eliminar. Factura no encontrada con ID: " + id);
+        }
         invoiceRepository.deleteById(id);
     }
 }

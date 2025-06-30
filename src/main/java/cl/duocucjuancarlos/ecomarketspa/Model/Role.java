@@ -13,6 +13,9 @@ public class Role {
     private Integer id;
 
     @Column(nullable = false)
+    private String nombreRole;
+
+    @Column(nullable = false)
     private String tipoRol;
 
     @OneToMany(mappedBy = "rol")

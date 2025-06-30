@@ -3,26 +3,39 @@ package cl.duocucjuancarlos.ecomarketspa.Controller;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Request.UserRequest;
 import cl.duocucjuancarlos.ecomarketspa.Controller.Response.UserResponse;
 import cl.duocucjuancarlos.ecomarketspa.Service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/users")
 public class UserController {
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
-        return ResponseEntity.ok(userService.createUser(request));
+        UserResponse response = userService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getById(@PathVariable Integer id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    public ResponseEntity<?> getById(@PathVariable Integer id) {
+        if (id == null || id <= 0) {
+            return ResponseEntity.badRequest().body(Map.of("error", "El ID de usuario es inválido"));
+        }
+        UserResponse response = userService.getUserById(id);
+        if (response == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Usuario no encontrado"));
+        }
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping
@@ -31,12 +44,19 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> update(@PathVariable Integer id, @RequestBody UserRequest request) {
-        return ResponseEntity.ok(userService.updateUser(id, request));
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody UserRequest request) {
+        if (id == null || id <= 0) {
+            return ResponseEntity.badRequest().body(Map.of("error", "El ID de usuario es inválido"));
+        }
+        UserResponse updatedUser = userService.updateUser(id, request);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+    public ResponseEntity<?> delete(@PathVariable Integer id) {
+        if (id == null || id <= 0) {
+            return ResponseEntity.badRequest().body(Map.of("error", "El ID de usuario es inválido"));
+        }
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

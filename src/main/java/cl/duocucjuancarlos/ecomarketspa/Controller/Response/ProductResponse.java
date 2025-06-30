@@ -7,5 +7,6 @@ public class ProductResponse {
     private String nombre;
     private String descripcion;
     private String tipoProducto;
+    private Double precio;
     // Puedes agregar campos de stock si quieres mostrarlo en la respuesta
 }
