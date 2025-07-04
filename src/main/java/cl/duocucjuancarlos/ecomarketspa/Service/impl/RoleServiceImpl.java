@@ -24,6 +24,7 @@ public class RoleServiceImpl implements RoleService {
         RoleResponse res = new RoleResponse();
         res.setId(role.getId());
         res.setNombreRole(role.getNombreRole());
+        res.setTipoRol(role.getTipoRol());
         return res;
     }
 
@@ -32,6 +33,7 @@ public class RoleServiceImpl implements RoleService {
     public RoleResponse createRole(RoleRequest request) {
         Role role = new Role();
         role.setNombreRole(request.getNombreRole());
+        role.setTipoRol(request.getTipoRol());
 
         Role savedRole = roleRepository.save(role);
         return toResponse(savedRole);

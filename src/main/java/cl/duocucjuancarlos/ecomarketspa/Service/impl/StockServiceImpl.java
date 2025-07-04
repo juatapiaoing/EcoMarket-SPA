@@ -31,6 +31,7 @@ public class StockServiceImpl implements StockService {
     private StockResponse toResponse(Stock stock) {
         StockResponse res = new StockResponse();
         res.setId(stock.getId());
+        res.setProductoNombre(stock.getProducto().getNombre());
         res.setProductoId(stock.getProducto().getId());
         res.setCantidadTotal(stock.getCantidadTotal());
         res.setMovimientoId(stock.getMovimiento() != null ? stock.getMovimiento().getId() : null);

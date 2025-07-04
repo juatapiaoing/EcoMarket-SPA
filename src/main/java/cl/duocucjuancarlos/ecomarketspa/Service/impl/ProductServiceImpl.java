@@ -26,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
         response.setNombre(product.getNombre());
         response.setDescripcion(product.getDescripcion());
         response.setTipoProducto(product.getTipoProducto());
+        response.setPrecio(product.getPrecio());
         return response;
     }
 
@@ -36,6 +37,7 @@ public class ProductServiceImpl implements ProductService {
         product.setNombre(request.getNombre());
         product.setDescripcion(request.getDescripcion());
         product.setTipoProducto(request.getTipoProducto());
+        product.setPrecio(request.getPrecio());
 
         Product savedProduct = productRepository.save(product);
         return toResponse(savedProduct);
